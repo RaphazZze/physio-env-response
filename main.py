@@ -3,11 +3,11 @@ import glob
 import pandas as pd
 
 # ==== CONFIGURABLE BASE PATH ====
-FITBIT_BASE_PATH = '/Users/raphael/Downloads/Takeout 2/Fitbit'
+FITBIT_BASE_PATH = os.path.join('data', 'Fitbit')
 
 # ==== FILE LOCATIONS ====
-SLEEP_SCORE_CSV = os.path.join(FITBIT_BASE_PATH, 'Sleep Score', 'sleep_score.csv')
-HRV_DIR = os.path.join(FITBIT_BASE_PATH, 'Heart Rate Variability')
+FITBIT_SLEEP_SCORE_PATH = os.path.join(FITBIT_BASE_PATH, 'Sleep Score', 'sleep_score.csv')
+FITBIT_HRV_DIR = os.path.join(FITBIT_BASE_PATH, 'Heart Rate Variability')
 
 # ==== READ RHR DATA ====
 def load_rhr(sleep_score_csv):
@@ -35,12 +35,11 @@ def load_hrv(hrv_dir):
             print(f"Warning: Could not read {file}: {e}")
     hrv_df = pd.DataFrame(hrv_rows)
     hrv_df = hrv_df.rename(columns={'rmssd': 'HRV_rmssd'})
-    # Keep only the first row per date
     hrv_df = hrv_df.groupby('date', as_index=False).first()
     return hrv_df
 
 # ==== MERGE & OUTPUT ====
-def merge_and_save(rhr_df, hrv_df, output_csv='merged_data.csv'):
+def merge_and_save(rhr_df, hrv_df, output_csv=os.path.join('data', 'merged_data.csv')):
     merged = pd.merge(rhr_df, hrv_df, on='date', how='outer')
     merged = merged.sort_values('date')
     merged.to_csv(output_csv, index=False)
@@ -48,11 +47,11 @@ def merge_and_save(rhr_df, hrv_df, output_csv='merged_data.csv'):
 
 def main():
     print("[INFO] Loading Resting Heart Rate data...")
-    rhr_df = load_rhr(SLEEP_SCORE_CSV)
+    rhr_df = load_rhr(FITBIT_SLEEP_SCORE_PATH)
     print(f"[INFO] Loaded {len(rhr_df)} days from sleep_score.csv.")
 
     print("[INFO] Loading HRV (RMSSD) data from daily files...")
-    hrv_df = load_hrv(HRV_DIR)
+    hrv_df = load_hrv(FITBIT_HRV_DIR)
     print(f"[INFO] Loaded {len(hrv_df)} days from HRV summary files.")
 
     print("[INFO] Merging datasets...")
