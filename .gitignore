@@ -1,10 +1,15 @@
 # macOS
 .DS_Store
 
-# Data files and outputs
-data/
-*.csv
-*.sqlite
-*.db
-*.log
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
 
+# Virtual environments
+venv/
+.env/
+
+# Data files and outputs (ignore all in data/)
+data/
+!data/.gitkeep
