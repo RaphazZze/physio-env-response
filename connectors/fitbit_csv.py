@@ -2,7 +2,7 @@ import os
 import glob
 import pandas as pd
 
-class FitbitConnector:
+class FitbitCSVConnector:
     """
     Connector for standardized Fitbit export folders.
     Expects:

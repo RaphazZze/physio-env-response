@@ -1,9 +1,11 @@
 import os
 import pandas as pd
-from connectors.fitbit_connector import FitbitConnector
+from connectors.fitbit_csv import FitbitCSVConnector
+from connectors.openaq_csv import OpenAQCSVConnector
 
 DATA_DIR = 'data'
 FITBIT_BASE_PATH = os.path.join(DATA_DIR, 'Fitbit')
+OPENAQ_BASE_PATH = os.path.join(DATA_DIR, 'OpenAQ')
 OUTPUT_CSV = os.path.join(DATA_DIR, 'merged_data.csv')
 
 
@@ -25,11 +27,10 @@ def merge_dataframes(dataframes):
 
 
 def main():
+    # Load Fitbit data
     print("[INFO] Loading Fitbit data...")
-
-    fitbit = FitbitConnector(FITBIT_BASE_PATH)
+    fitbit = FitbitCSVConnector(FITBIT_BASE_PATH)
     metric_dfs = fitbit.get_daily_metrics()
-
     rhr_df = metric_dfs.get('rhr')
     hrv_df = metric_dfs.get('hrv')
 
@@ -43,9 +44,22 @@ def main():
     else:
         print("[WARN] No HRV data loaded.")
 
-    merged = merge_dataframes([rhr_df, hrv_df])
+    # Load OpenAQ data
+    print("[INFO] Loading OpenAQ data...")
+    openaq = OpenAQCSVConnector(OPENAQ_BASE_PATH)
+    pm25_df = openaq.load_pm25()
+
+    if pm25_df is not None and not pm25_df.empty:
+        print(f"[INFO] Loaded {len(pm25_df)} days PM2.5.")
+    else:
+        print("[WARN] No PM2.5 data loaded.")
+
+    # Merge all dataframes
+    merged = merge_dataframes([rhr_df, hrv_df, pm25_df])
 
     if merged is not None and not merged.empty:
+        if os.path.exists(OUTPUT_CSV):
+            print(f"[WARN] {OUTPUT_CSV} already exists and will be overwritten.")
         merged.to_csv(OUTPUT_CSV, index=False)
         print(f"[INFO] Merged file written to: {OUTPUT_CSV}")
     else:
