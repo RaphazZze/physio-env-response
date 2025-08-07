@@ -1,49 +1,44 @@
-## 1. Project Title
+### 1. Project Title
 Analyzing Personal Physiological Response to Montreal Forest Fire Smoke Events
 
-## 2. Current Goal
-I am consolidating and aligning my daily Resting Heart Rate (RHR) and Heart Rate Variability (HRV, RMSSD) data from Fitbit CSV exports into a single CSV file, in preparation for future correlation with environmental data.
+### 2. Current Goal
+Consolidate, align, and merge daily Resting Heart Rate (RHR) and Heart Rate Variability (HRV, RMSSD) data from Fitbit CSV exports using a modular connector architecture, in preparation for future correlation with environmental data.
 
-## 3. Background & Vision
-This project aims to explore possible relationships between air pollution from forest fire smoke events in Montreal and changes in my physiological markers, as recorded by Fitbit. Longer term, I want to visualize and understand the health impact of environmental stressors to inform lifestyle or health decisions.
+### 3. Background & Vision
+This project explores relationships between air pollution from Montreal forest fire smoke events and personal physiological markers, as recorded by Fitbit. Long-term, the aim is to visualize and understand personal health impacts from environmental stressors, supporting informed lifestyle or health decisions.
 
-## 4. Tech/Method Stack
-- Python (main scripting language)
-- pandas (data processing)
-- Virtual environment for dependency isolation
-- Fitbit data exports: `sleep_score.csv` for RHR, daily HRV summary CSVs for HRV
+### 4. Tech/Method Stack
 - VS Code on Mac as IDE
+- Python (with venv)
+- pandas (data processing)
+- Modular connectors (starting with Fitbit) for scalable data ingestion
+- Fitbit data exports: `sleep_score.csv` for RHR, daily HRV summary CSVs for HRV
 
-## 5. Key Requirements
-- Correct extraction of daily RHR from `/Sleep Score/sleep_score.csv`
-- Correct extraction of daily HRV (RMSSD) from `/Heart Rate Variability/Daily Heart Rate Variability Summary*.csv` files (one per day)
-- Merge into a single CSV (`merged_data.csv`) with columns: `date`, `resting_heart_rate`, `HRV_rmssd`
+### 5. Key Requirements
+- Modular, connector-based data ingestion (FitbitConnector)
+- Merge into single CSV (`merged_data.csv`) with columns: `date`, `resting_heart_rate`, `HRV_rmssd`
 - One row per day, including all dates present in either source
-- Missing values allowed (leave blank if metric is missing)
-- Code should be easy to extend with new metrics later
-- Paths are configurable via a variable
+- Allow missing values (leave blank if metric is missing)
+- Code is easy to extend with new metrics or data sources
+- User simply drops the standardized Fitbit export folder under `/data`
+- All data input and output files are in the `/data` folder
 
-## 6. Decisions Made
-- Only process HRV files whose names start with `Daily Heart Rate Variability Summary`
-- Use the `timestamp` column as the date for both RHR and HRV
+### 6. Decisions Made
+- Introduced a `connectors/fitbit_connector.py` module encapsulating all Fitbit-specific subpaths and logic
+- Main pipeline (`main.py`) is modular, referencing only the connector’s base path
 - Deduplicate per day (take first value if there are duplicates)
 - Output file named `merged_data.csv`
 - HRV column is named `HRV_rmssd`
-- Virtual environment is used for project dependencies
 
-## 7. Open Questions / Risks
-- Air quality/environmental data integration is not yet included
-- No data validation on outliers or corrupted rows
-- Future extensibility for other physiological or environmental metrics still to be implemented
+### 7. Open Questions / Risks
+- Integration of air quality/environmental data is planned but not yet implemented
+- No automated data validation (outliers, corrupted rows, etc.) yet
+- Extensibility for additional physiological or environmental metrics is planned
 
-## 8. Next Actions
+### 8. Next Actions
 - Begin integrating environmental (air quality) data for Montreal smoke events
-- Plan for expansion to include other metrics as needed
+- Continue extending the connector architecture for additional data sources/metrics
 
-## 9. Artifacts Generated
-- Python script: `main.py` (merges RHR and HRV)
-- Output data: `merged_data.csv`
-- Virtual environment setup (`venv`), dependencies managed via `pip`
-- Sample code snippets for modular data loading and merging
-
-Respond with 'Got it.'
+### 9. Artifacts Generated
+- Python scripts: `main.py`, `connectors/fitbit_connector.py`
+- Output data: `data/merged_data.csv`
