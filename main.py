@@ -47,15 +47,18 @@ def main():
     # Load OpenAQ data
     print("[INFO] Loading OpenAQ data...")
     openaq = OpenAQCSVConnector(OPENAQ_BASE_PATH)
-    pm25_df = openaq.load_pm25()
+    print(f"[DEBUG] Looking for CSVs in: {openaq.data_folder}")
+    print(f"[DEBUG] Found CSV paths: {openaq.csv_paths}")
+    aq_metrics = openaq.get_daily_metrics()
+    aq_df = aq_metrics.get('air_quality')
 
-    if pm25_df is not None and not pm25_df.empty:
-        print(f"[INFO] Loaded {len(pm25_df)} days PM2.5.")
+    if aq_df is not None and not aq_df.empty:
+        print(f"[INFO] Loaded {len(aq_df)} days OpenAQ air quality (pm25, o3).")
     else:
-        print("[WARN] No PM2.5 data loaded.")
+        print("[WARN] No OpenAQ air quality data loaded.")
 
     # Merge all dataframes
-    merged = merge_dataframes([rhr_df, hrv_df, pm25_df])
+    merged = merge_dataframes([rhr_df, hrv_df, aq_df])
 
     if merged is not None and not merged.empty:
         if os.path.exists(OUTPUT_CSV):
