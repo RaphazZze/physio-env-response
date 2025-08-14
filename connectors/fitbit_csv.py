@@ -15,14 +15,16 @@ class FitbitCSVConnector:
         self.hrv_dir = os.path.join(base_path, 'Heart Rate Variability')
 
     def load_rhr(self):
+        """Load daily Resting Heart Rate (RHR) as datetime.date."""
         df = pd.read_csv(self.sleep_score_path)
-        df['date'] = pd.to_datetime(df['timestamp']).dt.date.astype(str)
+        df['date'] = pd.to_datetime(df['timestamp']).dt.date  # datetime.date, not str
         rhr_df = df[['date', 'resting_heart_rate']].copy()
         # Deduplicate: keep first per day
         rhr_df = rhr_df.groupby('date', as_index=False).first()
         return rhr_df
 
     def load_hrv(self):
+        """Load daily Heart Rate Variability (RMSSD) as datetime.date."""
         pattern = os.path.join(self.hrv_dir, 'Daily Heart Rate Variability Summary*.csv')
         hrv_files = glob.glob(pattern)
         hrv_rows = []
@@ -32,9 +34,9 @@ class FitbitCSVConnector:
                 if df.empty:
                     continue
                 row = df.iloc[0]
-                date_str = pd.to_datetime(row['timestamp']).date().isoformat()
+                date_val = pd.to_datetime(row['timestamp']).date()
                 rmssd = row.get('rmssd', None)
-                hrv_rows.append({'date': date_str, 'HRV_rmssd': rmssd})
+                hrv_rows.append({'date': date_val, 'HRV_rmssd': rmssd})
             except Exception as e:
                 print(f"Warning: Could not read {file}: {e}")
         hrv_df = pd.DataFrame(hrv_rows)

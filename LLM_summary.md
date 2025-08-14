@@ -40,8 +40,8 @@ This project explores relationships between air pollution from Montreal forest f
 - Extensibility for additional physiological or environmental metrics is planned
 
 ### 8. Next Actions
-- Begin integrating other environmental (air quality) data sources or metrics
-- Continue extending the connector architecture for additional data sources/metrics
+- Check feedback and suggestions from o3 and GPT5
+- Integrate GI flareups data such as the one on 2025-08-08
 
 ### 9. Artifacts Generated
 - Python scripts: `main.py`, `connectors/fitbit_csv.py`, `connectors/openaq_csv.py`
