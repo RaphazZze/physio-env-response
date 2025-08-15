@@ -42,7 +42,6 @@ The project investigates links between air pollution from Montreal forest fire s
 - Extensibility for additional physiological or environmental metrics is planned
 
 ### 8. Next Actions
-- Integrate GI flareups data (e.g., 2025-08-08)
 - Prepare visualization layer for merged dataset
 - Add unit tests for connectors
 
